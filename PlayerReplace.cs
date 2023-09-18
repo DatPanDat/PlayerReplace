@@ -12,36 +12,35 @@ namespace PlayerReplace
     public class PlayerReplace : Plugin<Config>
     {
         public override PluginPriority Priority { get; } = PluginPriority.Default;
-        public override string Author { get; } = "@Cyanox62, Recreate and \"\"\"improved\"\"\" by @DatPanDat";
+        public override string Author { get; } = "@Cyanox62, \"\"\"Improved\"\"\" by @DatPanDat, actually got it to work by @User_NonExist";
         public override string Name { get; } = "PlayerReplace";
         public override string Prefix { get; } = "PlayerReplace";
         public override Version Version { get; } = new Version(1, 0, 0);
         public override Version RequiredExiledVersion { get; } = new Version(8, 2, 1);
-        public static PlayerReplace Instance { get; private set; }
-        public EventHandlers EventHandlers { get; private set; }
 
-        public EventHandlers ev;
+        public static PlayerReplace Instance;
+
+        public EventHandlers evnt;
 
         public override void OnEnabled()
         {
-            base.OnEnabled();
+            Instance = this;
 
-            if (!Config.IsEnabled) return;
 
-            ev = new EventHandlers();
+            evnt = new EventHandlers();
 
-            Player.Destroying += ev.OnPlayerDestroying;
-            Server.RoundStarted += ev.OnRoundStart;
+            Player.Left += evnt.OnLeft;
+            Server.RoundStarted += evnt.OnRoundStart;
         }
 
         public override void OnDisabled()
         {
-            base.OnDisabled();
+            Instance = null;
 
-            Player.Destroying -= ev.OnPlayerDestroying;
-            Server.RoundStarted -= ev.OnRoundStart;
+            Player.Left -= evnt.OnLeft;
+            Server.RoundStarted -= evnt.OnRoundStart;
 
-            ev = null;
+            evnt = null;
         }
 
     }
