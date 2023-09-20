@@ -15,8 +15,7 @@ namespace PlayerReplace
         public override string Author { get; } = "Based from @Cyanox62, \"\"\"Improved\"\"\" by @DatPanDat, un-stupid by @User_NonExist";
         public override string Name { get; } = "PlayerReplace";
         public override string Prefix { get; } = "PlayerReplace";
-        public override Version Version { get; } = new Version(1, 0, 0);
-        public override Version RequiredExiledVersion { get; } = new Version(8, 2, 1);
+        public override Version Version { get; } = new Version(1, 0, 1);
 
         public static PlayerReplace Instance;
         public EventHandlers ev;

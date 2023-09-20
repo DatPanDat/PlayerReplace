@@ -27,7 +27,7 @@ namespace PlayerReplace
         [Description("The duration of message above.")]
         public ushort ReplacedMessageTime { get; set; } = 5;
 
-        [Description("The text displayed to the server if no replacement was found.")]
+        [Description("The text displayed to the server if no replacement was found. (Leave empty to turn it off)")]
         public string NoReplaceMessage { get; set; } = "<i>%oldPlayerName% with a role %oldRole% has disconnected without anyone replacing them!</i>";
 
         [Description("The duration of no replacement message above.")]

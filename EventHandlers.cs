@@ -159,9 +159,12 @@ namespace PlayerReplace.EventHandler
                 Ragdoll.CreateAndSpawn(ev.Player.Role, ev.Player.Nickname, PlayerReplace.Instance.Config.DCDeathReason, pos, rot);//spawn a corpse in their place
                 foreach (Item item in items) item.CreatePickup(pos, rot);//dropping the items they had
                 foreach (ItemType ammo in ammoAndAmount.Keys) Item.Create(ammo).CreatePickup(pos, rot);//dropping their ammos not working lmaoooooo
-                string FormatNonreplaceMessage = PlayerReplace.Instance.Config.NoReplaceMessage.Replace("%oldPlayerName%", ev.Player.Nickname).Replace("%oldRole%", ev.Player.Role.Type.ToString());//Format messages with dc player infos
-                Map.Broadcast(PlayerReplace.Instance.Config.NoReplaceMessageTime, FormatNonreplaceMessage);//broadcast to the entire server about it
 
+                if (PlayerReplace.Instance.Config.NoReplaceMessage != "")
+                {
+                    string FormatNonreplaceMessage = PlayerReplace.Instance.Config.NoReplaceMessage.Replace("%oldPlayerName%", ev.Player.Nickname).Replace("%oldRole%", ev.Player.Role.Type.ToString()); //Format messages with dc player infos
+                    Map.Broadcast(PlayerReplace.Instance.Config.NoReplaceMessageTime, FormatNonreplaceMessage);//broadcast to the entire server about it
+                }
             }
         }
 
