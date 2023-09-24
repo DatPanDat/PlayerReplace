@@ -32,7 +32,7 @@ namespace PlayerReplace.EventHandler
 
             bool isExclused = false; //for checking later if the player was exclused or not
 
-            if (!isRoundStarted || PlayerReplace.Instance.Config.RestrictedRoles.Contains(ev.Player.Role) || ev.Player.Position.y < -1997 || (ev.Player.CurrentRoom.Zone == ZoneType.LightContainment && Exiled.API.Features.Map.IsLczDecontaminated))
+            if (!Round.InProgress || !isRoundStarted || PlayerReplace.Instance.Config.RestrictedRoles.Contains(ev.Player.Role) || ev.Player.Position.y < -1997 || (ev.Player.CurrentRoom.Zone == ZoneType.LightContainment && Map.IsLczDecontaminated))
                 {
                     isExclused = true;
                     Log.Debug("DC: Exclusion checks triggered, skipping replacer...");
@@ -62,8 +62,8 @@ namespace PlayerReplace.EventHandler
                 Log.Debug("No spectators found...");
             }
 
-            if (specPlayers.Count > 0) newPlayer = specPlayers[Random.Range(0, specPlayers.Count - 1)];
-
+            if (specPlayers.Count != 0) newPlayer = specPlayers[Random.Range(0, specPlayers.Count - 1)];
+            
             if (newPlayer != null)
             {
                 Log.Debug("DC: Successfully gotten replacement...");
