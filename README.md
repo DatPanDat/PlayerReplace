@@ -6,7 +6,7 @@ Originally ["DCReplace Port"](https://github.com/DatPanDat/DCReplace) attempt th
 - If they're a 079, the replaced player will gets the correct EXP, AP, and the Room they were in.
 - On the case of no replacement, their items and ragdoll will spawn with customizable reasons, and a broadcast to the server.
 - Changing the broadcast message, time, and roles to ignore in the config.
-- Abilities to replace external role, currently support ["UserNonExist/Spies-SL"](https://github.com/UserNonExist/Spies-SL).
+- Abilities to replace external role, currently support [UserNonExist/Spies-SL](https://github.com/UserNonExist/Spies-SL).
 
 Code quite literally taken from ["Cyanox62/DCReplace"](https://github.com/Cyanox62/DCReplace) two years old build and is quite literally my first project in C#, feel free to publicly shame me.
 
