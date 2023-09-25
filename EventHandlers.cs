@@ -9,6 +9,7 @@ using Exiled.API.Features.Roles;
 using System.Collections.Generic;
 using CustomPlayerEffects;
 using Exiled.API.Features.Items;
+using PlayerReplace.API.Features.ExternalRoles.Enums;
 
 namespace PlayerReplace.EventHandler
 {
@@ -17,6 +18,8 @@ namespace PlayerReplace.EventHandler
         public PlayerReplace plugin;
         
         private bool isRoundStarted = false;
+        public bool CanReplace = true;
+        
         public void OnRoundStart() //Check if the round has started
         {
             isRoundStarted = true;
@@ -29,15 +32,22 @@ namespace PlayerReplace.EventHandler
 
         public void OnLeft(LeftEventArgs ev)//THE DISCONNECTED REPLACING
         {
-
+            
+            if (!CanReplace)
+            {
+                Log.Debug("DC: Replacement disabled, skipping...");
+                return;
+            }
+            
+            bool isExternalRole = API.API.IsExternalRole(ev.Player);
             bool isExclused = false; //for checking later if the player was exclused or not
 
             if (!Round.InProgress || !isRoundStarted || PlayerReplace.Instance.Config.RestrictedRoles.Contains(ev.Player.Role) || ev.Player.Position.y < -1997 || (ev.Player.CurrentRoom.Zone == ZoneType.LightContainment && Map.IsLczDecontaminated))
-                {
-                    isExclused = true;
-                    Log.Debug("DC: Exclusion checks triggered, skipping replacer...");
-                    return;
-                }
+            {
+                isExclused = true;
+                Log.Debug("DC: Exclusion checks triggered, skipping replacer...");
+                return;
+            }
 
             Log.Debug("DC: Exclusion not triggered, proceeding...");
 
@@ -64,11 +74,23 @@ namespace PlayerReplace.EventHandler
 
             if (specPlayers.Count != 0) newPlayer = specPlayers[Random.Range(0, specPlayers.Count - 1)];
             
+            
             if (newPlayer != null)
             {
                 Log.Debug("DC: Successfully gotten replacement...");
-
-                newPlayer.Role.Set(ev.Player.Role, RoleSpawnFlags.None);//respawn the player
+                
+                switch (API.API.GetExternalRole(ev.Player))
+                {
+                    case ExternalRoleType.CiSpy:
+                        Log.Debug("DC: Player is a Spy, replacing...");
+                        API.API.CiSpyRole.SpawnRole(ev.Player, newPlayer);
+                        break;
+                    default:
+                        Log.Debug("DC: Player does not have a valid external role, setting up as normal role");
+                        newPlayer.Role.Set(ev.Player.Role, RoleSpawnFlags.None);//respawn the player
+                        break;
+                }
+                
 
                 float health = ev.Player.Health;
                 float ahealth = ev.Player.ArtificialHealth;
@@ -87,20 +109,23 @@ namespace PlayerReplace.EventHandler
                 float Ap079 = 0f, Vigor106 = 0f;
                 Exiled.API.Features.Camera Room079 = null;
 
-                if (ev.Player.Role == RoleTypeId.Scp079)//Check 079 location xp and ap
+                if (!isExternalRole)
                 {
-                    Log.Debug("DC: SCP-079 Detected");
-                    Exp079 = ev.Player.Role.As<Scp079Role>().Experience;
-                    Ap079 = ev.Player.Role.As<Scp079Role>().Energy;
-                    Room079 = ev.Player.Role.As<Scp079Role>().Camera;
+                    if (ev.Player.Role == RoleTypeId.Scp079) //Check 079 location xp and ap
+                    {
+                        Log.Debug("DC: SCP-079 Detected");
+                        Exp079 = ev.Player.Role.As<Scp079Role>().Experience;
+                        Ap079 = ev.Player.Role.As<Scp079Role>().Energy;
+                        Room079 = ev.Player.Role.As<Scp079Role>().Camera;
+                    }
+
+                    if (ev.Player.Role == RoleTypeId.Scp106) //check 106 vigor
+                    {
+                        Log.Debug("DC: SCP-106 Detected");
+                        Vigor106 = ev.Player.Role.As<Scp106Role>().Vigor;
+                    }
                 }
 
-                if (ev.Player.Role == RoleTypeId.Scp106)//check 106 vigor
-                {
-                    Log.Debug("DC: SCP-106 Detected");
-                    Vigor106 = ev.Player.Role.As<Scp106Role>().Vigor;
-                }
-                
                 Timing.CallDelayed(0.3f, () =>
                 {
                     newPlayer.Position = pos;
@@ -110,16 +135,19 @@ namespace PlayerReplace.EventHandler
                     newPlayer.ArtificialHealth = ahealth;
                     newPlayer.HumeShield = hshield;//HP, AHP, HS
 
-                    if (newPlayer.Role == RoleTypeId.Scp079)//if 079, take them to correct room with right amount of xp and ap
+                    if (!isExternalRole)
                     {
-                        newPlayer.Role.As<Scp079Role>().Experience = Exp079;
-                        newPlayer.Role.As<Scp079Role>().Energy = Ap079;
-                        newPlayer.Role.As<Scp079Role>().Camera = Room079;
-                    }
+                        if (newPlayer.Role == RoleTypeId.Scp079) //if 079, take them to correct room with right amount of xp and ap
+                        {
+                            newPlayer.Role.As<Scp079Role>().Experience = Exp079;
+                            newPlayer.Role.As<Scp079Role>().Energy = Ap079;
+                            newPlayer.Role.As<Scp079Role>().Camera = Room079;
+                        }
 
-                    if (newPlayer.Role == RoleTypeId.Scp106)//if 106, give the right amount of vigor
-                    {
-                        newPlayer.Role.As<Scp106Role>().Vigor = Vigor106;
+                        if (newPlayer.Role == RoleTypeId.Scp106) //if 106, give the right amount of vigor
+                        {
+                            newPlayer.Role.As<Scp106Role>().Vigor = Vigor106;
+                        }
                     }
 
                     foreach (Item item in items)//Inventory giving
