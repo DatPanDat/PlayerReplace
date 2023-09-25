@@ -5,7 +5,7 @@ using PlayerReplace.API.Features.ExternalRoles.Enums;
 
 namespace PlayerReplace.API;
 
-public static class API
+public class API
 {
     public static Func<Player, bool> IsSpy => CiSpyRole.IsRole;
     public static Action<Player, Player> SpawnRole => CiSpyRole.SpawnRole;
