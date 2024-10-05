@@ -1,3 +1,5 @@
+# publicized upon request, most are unchanged
+
 # PlayerReplace
 Originally ["DCReplace Port"](https://github.com/DatPanDat/DCReplace) attempt that I've decided to try expend a bit.
 
